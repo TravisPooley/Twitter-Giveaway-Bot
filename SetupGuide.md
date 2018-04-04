@@ -1,5 +1,10 @@
-### Setting Up A Twitter Developer Account
+### Installing The Dependencies
+This bot requires the [Tweepy](https://github.com/tweepy/tweepy) python library, you can install it using pip like so:
+```cmd
+pip install twitter
+```
 
+### Setting Up A Twitter Developer Account
 
 You will also need to create an app account [here](https://dev.twitter.com/apps), follow the instructions bellow to get your login infomation.
 1. Sign in with your Twitter account
