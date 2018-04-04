@@ -1,7 +1,15 @@
 ### Installing The Dependencies
-This bot requires the [Tweepy](https://github.com/tweepy/tweepy) python library, you can install it using pip like so:
+This bot requires the [Tweepy](https://github.com/tweepy/tweepy) python library, the following instructions are from the guide provided in its repository.
+
+The easiest way to install the latest version is by using pip/easy_install to pull it from PyPI:
 ```cmd
-pip install twitter
+pip install tweepy
+```
+You may also use Git to clone the repository from GitHub and install it manually:
+```cmd
+git clone https://github.com/tweepy/tweepy.git
+cd tweepy
+python setup.py install
 ```
 
 ### Setting Up A Twitter Developer Account
