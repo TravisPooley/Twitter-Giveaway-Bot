@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-# Twitter Bot 4.2
+# Twitter Bot 4.0
 # By Travis
 # GitHub: https://github.com/TravisPooley/Twitter-Giveaway-Bot
 
@@ -129,7 +129,7 @@ try:
     try:
         # Setting config value for checkMessagesInterval
         checkMessagesInterval = int(config['checkMessagesInterval'])
-        nextMessageScanStart = (datetime.datetime.now() + datetime.timedelta(minutes = checkMessagesInterval))
+        nextMessageScanStart = (datetime.datetime.now() + datetime.timedelta(minutes = 0))
         # Validation exception
     except (ValueError, KeyError):
         # Error logging
@@ -429,7 +429,7 @@ class TwitterBot:
         print("["+str(datetime.datetime.now()).split(".")[0]+"] - INFO > Startigng giveaway scan")
         print('')
         try:
-            for tweet in tweepy.Cursor(api.search, q='giveaway OR win follow -filter:retweets',tweet_mode='extended').items(amountToScan):
+            for tweet in tweepy.Cursor(api.search, q='steam OR key giveaway OR win follow -filter:retweets',tweet_mode='extended').items(amountToScan):
                     # ---------------- # START INFOMATION DEFINITION # ---------------- #
                     # Defining Tweets Creators Name
                     tweettext = tweet.full_text.lower()
@@ -451,19 +451,21 @@ class TwitterBot:
 
                     # -------------- # START DATABASE SAFTEY OPERATIONS # -------------- #
                     # Removing Unsafe Charaters From Tweet
-                    tweettext = tweettext.replace("'", "")
+                    tweettext = (tweettext.encode('ascii',errors='ignore'))
+                    tweettext = str(tweettext.decode("utf-8"))
+                    tweettext = str(tweettext).replace("'", "")
                     tweettext = tweettext.replace('"', '')
-                    tweettext = str(tweettext.encode('ascii',errors='ignore'))
                     # Removing Unsafe Charaters From Tweet Creators Screen Name
+                    tweetname = (tweetname.encode('ascii',errors='ignore'))
+                    tweetname = str(tweetname.decode("utf-8"))
                     tweetname = tweetname.replace("'", "")
                     tweetname = tweetname.replace('"', '')
-                    tweetname = str(tweetname.encode('ascii',errors='ignore'))
                     # Removing Unsafe Charaters From Tweet Creators Full Name
+                    tweetfullname = (tweetfullname.encode('ascii',errors='ignore'))
+                    tweetfullname = str(tweetfullname.decode("utf-8"))
                     tweetfullname = tweetfullname.replace("'", "")
                     tweetfullname = tweetfullname.replace('"', '')
-                    tweetfullname = str(tweetfullname.encode('ascii',errors='ignore'))
                     # --------------- # END DATABASE SAFTEY OPERATIONS # --------------- #
-
                     # ------------------ # START DATABASE OPERATIONS # ----------------- #
 
                     # Checking Database To See If Tweet Has Already Been Ccanned
@@ -537,6 +539,10 @@ class TwitterBot:
                         tweetFlagLevel = tweetFlagLevel + 1
                             # Append actions for debuging
                         tweetActions.append('Tweet appears to be a quote [QUOTE]')
+                    if "keyword" in tweettext:
+                        tweetFlagLevel = tweetFlagLevel + 1
+                        # Append actions for debuging
+                        tweetActions.append('requires external actions [keyword in stream]')
 
                     # Checking if acoount is an account setup to expose giveaway seeking bots
                     # Defining the keywords that are found in the annoying bots names
@@ -603,24 +609,49 @@ class TwitterBot:
                     # Checking if tweet meets standards for primary actions
                     if tweetFlagLevel == 0:
                         # Checking if tagging is required to enter
-                        if " tag " in tweettext:
+                        if "tag " in tweettext.replace('instagram', ''):
                             # Checking if bot has already performed tag action CLIENT SIDE
                             if "TAG" not in tweetActions:
+                                print('tweet')
                                 befor_keyowrd, keyword, after_keyword = tweettext.partition('tag')
                                 # Checking if bot is not in ghost mode before performing actions
                                 if ghostmode == False:
                                     # Checking a certain amount of accounts need to be tagged
                                     if str(after_keyword[1]).isdigit() == True:
-                                        api.update_status(str('@' + str(tweetname) + ''.join(random.sample(set(tagUsers), int(after_keyword[1])))), str(tweetid))
+                                        print('digit')
+                                        if int(after_keyword[1]) <= len(tagUsers):
+                                            numberOfTags = int(after_keyword[1])
+                                        else:
+                                           numberOfTags = len(tagUsers)
+                                        api.update_status(str('@' + str(tweetname) + ''.join(random.sample(set(tagUsers), numberOfTags))), str(tweetid))
                                     # Checking ifa single account need to be tagged
                                     elif str(after_keyword[1]) == "a":
+                                        print('a')
                                         api.update_status(str('@' + str(tweetname) + ''.join(random.sample(set(tagUsers), 1))), str(tweetid))
-                                    # Checking if should use radnom tagging fallback
-                                    if str(after_keyword[1]) != "a" and str(after_keyword[1]).isdigit() == False:
-                                        # Twitter action follow user
+                                    elif str(after_keyword[1]) == "two":
+                                        print('two')
+                                        api.update_status(str('@' + str(tweetname) + ''.join(random.sample(set(tagUsers), 2))), str(tweetid))
+                                    elif str(after_keyword[1]) == "three":
+                                        print('three')
                                         api.update_status(str('@' + str(tweetname) + ''.join(random.sample(set(tagUsers), 3))), str(tweetid))
+                                    elif str(after_keyword[1]) == "some":
+                                        print('some')
+                                        api.update_status(str('@' + str(tweetname) + ''.join(random.sample(set(tagUsers), 3))), str(tweetid))
+                                    # Checking if should use radnom tagging fallback
+                                    # str(after_keyword[1]) != "a" and str(after_keyword[1]).isdigit() == False
+                                    else:
+                                        # Twitter action follow user
+                                        print('else')
+                                        api.update_status(str('@' + str(tweetname) + ''.join(random.sample(set(tagUsers), 3))), str(tweetid))
+                                        
                                 # appending tag to the list of actions performed
                                 tweetActions.append('TAG')
+
+                    #if tweetFlagLevel == 0:
+                    #    if "" in tweettext:
+                    #        if "" not in tweetActions:
+                    #            if ghostmode == False:
+                    #                if
 
                     # Checking if tweet meets standards for primary actions
                     if tweetFlagLevel == 0 and "RETWEET" in tweetActions or "FAVORITE" in tweetActions:
@@ -713,7 +744,9 @@ class TwitterBot:
 
 
 
-
+    def mentionChecker(self):
+        pass
+    
     def checkDirectMessages(self):
         # function for saving direct messages and respoding with automated responses
         print('')
@@ -726,11 +759,9 @@ class TwitterBot:
             directMessages = tweepy.Cursor(api.direct_messages,tweet_mode='extended').items(amountToScanMessages)
             for direct in directMessages:
 
-
-
                 # ---------------- # START INFOMATION DEFINITION #----------------  #
                 # Defining Senders Id
-                recipicantID = direct.recipient_id_str
+                recipicantID = direct.sender.id
                 # Defining Id
                 directId = direct.id
                 # Defining Sent Time
@@ -743,17 +774,31 @@ class TwitterBot:
                 directProfilePicture = direct.sender.profile_image_url
                 # Defining Direct Messages Text
                 directText = direct.text
-                # Removing Emojis From Screen Name Of Sender
-                directScreenName = str(directScreenName.encode('ascii',errors='ignore'))
-                # Removing Emojis From Text
-                directText = str(directText.encode('ascii',errors='ignore'))
-                # Removing Emojis From Name Of Sender
-                directName = str(directName.encode('ascii',errors='ignore'))
                 # Flag Level
                 flagLevel = int(0)
+                # message actions
+                messageActions = []
 
                 # ----------------- # END INFOMATION DEFINITION #----------------  #
-
+                # -------------- # START DATABASE SAFTEY OPERATIONS # -------------- #
+                # Removing Unsafe Charaters From The Message
+                directText = (directText.encode('ascii',errors='ignore'))
+                
+                directText = str(directText.decode("utf-8"))
+                directText = directText.replace("'", "")
+                directText = directText.replace('"', '')
+                # Removing Unsafe Charaters From Message Senders Name
+                directName = (directName.encode('ascii',errors='ignore'))
+                
+                directName = str(directName.decode("utf-8"))
+                directName = directName.replace("'", "")
+                directName = directName.replace('"', '')
+                #  Unsafe Charaters From Tweet Creators Screen Name
+                directScreenName = (directScreenName.encode('ascii',errors='ignore'))
+                directScreenName = str(directScreenName.decode("utf-8"))
+                directScreenName = directScreenName.replace("'", "")
+                directScreenName = directScreenName.replace('"', '')
+                # --------------- # END DATABASE SAFTEY OPERATIONS # --------------- #
                 # ---------------- # START DATABASE OPERATIONS #----------------  #
 
                 # Searching For Direct Message In Database
@@ -761,9 +806,7 @@ class TwitterBot:
                 # Checking If Direct Message Has Already Been Scanned
                 for oldDirect in c.fetchall():
                     if oldDirect[0] == 0:
-                        print('New Direct Message')
-                        print('')
-                        print(directText)
+                  
                         c.execute('INSERT INTO Message (MessageId, RecipicantID, Username, RealName, ProfilePicture, Flags, Message, MessageTime, SaveTime) VALUES("' + str(directId) + '","' + str(recipicantID) + '","' + str(directScreenName) + '","' + str(directName) + '","' + str(directProfilePicture) + '","' + str("test") + '","' + str(directText) + '","' + str(directTime) + '","' + str(datetime.datetime.now()) + '")')
                         conn.commit()
                     else:
@@ -775,6 +818,9 @@ class TwitterBot:
                         # add elif satements
                         # Automatic Tradelink Sending
                 if flagLevel < 99:
+                    print('New Direct Message')
+                    print('')
+                    print(directText)
                     keyWordsForTradeLink = ['tradelink', 'trade-link', 'trade link', ' tl ']
                     for keyWord in keyWordsForTradeLink:
                         if keyWord in directText:
@@ -782,15 +828,15 @@ class TwitterBot:
                                 if ghostmode == False:
                                     api.send_direct_message(recipicantID, text = tradeLink)
 
-                        ## FIX UP AND PUT IN CONFIG
-
-                keyWordsForWin = ['Winner', 'Won', 'Congratulations', 'congrats']
-                winResposes = ['Wow, did I win', 'Am I the winner of the competetion']
-                for keyWord in keyWordsForWin:
-                    if keyWord in directText:
-                        if ghostmode == False:
-                            for response in winResposes:
-                                api.send_direct_message(recipicantID, text = response)
+                    keyWordsForWin = ['winner', 'won', 'congratulations', 'congrats']
+                    winResposes = ['Wow, did I win', 'Am I the winner of the competetion', 'Did I actually win?', 'I believe I am the winner of the giveaway']
+                    for keyWord in keyWordsForWin:
+                        if keyWord in directText:
+                            if 'WON' not in messageActions:
+                                if ghostmode == False:
+                                    api.send_direct_message(recipicantID, text = random.choice(winResposes))
+                                messageActions.append('WON')
+                                print('sending')
                        
                 # ----------------- # END AUTO RESPONSE #----------------  #
 
@@ -800,12 +846,21 @@ class TwitterBot:
             
         except tweepy.TweepError as ERR:
             print(ERR)
-            if ERR == 'Twitter error response: status code = 403':
-                print('code 403 do something')
+            if "326" in e.reason:
+                # Error logging
+                print("["+str(datetime.datetime.now()).split(".")[0]+"] - ERROR > "+'your account has been locked! ERROR CODE: '+e.reason)
+                # Stop Bot Running
                 sys.exit()
-            else:
-                print('undexpected error')
-                sys.exit()
+            # Checking if account has hit rate limits
+            if "429" in e.reason:
+                print("["+str(datetime.datetime.now()).split(".")[0]+"] - INFO > Rate limit hit waiting 2 minutes")
+                # sleeping program for 2 minutes before performing any more actions
+                sleep(120)
+            # Checking if the author of the tweet has blocked the bot
+            if "blocked" in e.reason:
+                print("["+str(datetime.datetime.now()).split(".")[0]+"] - INFO > Encountered a user who has blocked the current account adding to database")
+                c.execute('INSERT INTO BlockedUsers (Username, FullName, UserID, ProfilePicture, Reason, Time, UnBlockTime) VALUES("' + str(tweetname) + '","' + str(tweetfullname) + '","' + str(userid) + '","' + str(tweetProfilePicture)+ '","' + str('Revenge') + '","' + str(datetime.datetime.now())+ '","' + str('Never') + '")')
+                conn.commit()
 
 
 
@@ -822,6 +877,9 @@ class TwitterBot:
 TwitterBot = TwitterBot()
 print ("Active Account: '"+api.me().name+"'")
 print('')
+
+#TEST
+nextScanStart = (datetime.datetime.now() + datetime.timedelta(minutes = 0))  
 
 while True:
 
