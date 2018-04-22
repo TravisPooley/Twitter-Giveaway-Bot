@@ -14,7 +14,7 @@ python setup.py install
 
 ### Setting Up A Twitter Developer Account
 
-You will also need to create an app account [here](https://dev.twitter.com/apps), follow the instructions bellow to get your login infomation.
+You will also need to create an app account [here](https://apps.twitter.com/), follow the instructions bellow to get your login infomation.
 1. Sign in with your Twitter account
 2. Create a new app account
 3. Modify the settings for that app account to allow read & write
