@@ -1,7 +1,6 @@
 # Twitter GiveAway Bot Using Tweepy
 
-This is a bot created in python it uses [tweepy](https://github.com/tweepy/tweepy), the goal of this project was to fully automate the process of entering giveaways.
-
+This is a bot created in python it uses [tweepy](https://github.com/tweepy/tweepy), the goal of this project was to fully automate the process of entering giveaways. Now you can automate the processes of retweeting, replying, favoriting and following, the bot will even reply to direct messages and mentions.
 
 ### Maintenance 
 Twitter has gradually been cracking down on the bot activity, this bot is likely to be affected by the new rules. I am no longer focusing on the development of this bot, for this reason I am releasing this code to allow anyone to hack it into their code or try fix the bot. Though I am realsing this code, please respect the [license](https://github.com/TravisPooley/Twitter-Giveaway-Bot/blob/add-license-1/LICENSE).
