@@ -9,7 +9,7 @@ Twitter has gradually been cracking down on the bot activity, this bot is likely
 This repository is presented for educational purposes only! You are personally liable for what you do with the information you acquire from this repository. Please note that this bot can get your account banned from Twitter, please read the [Twitter API rules](https://help.twitter.com/en/rules-and-policies/twitter-automation) before you use it.
 
 ### Setup
-Before you run the bot, you will need to change some information in the config section. I have written a basic guide for how to setup the bot [here](https://github.com/TravisPooley/Twitter-Giveaway-Bot/blob/master/SetupGuide.md)
+Before you run the bot, you will need to change some information in the config section. I have written a basic guides for how to setup the bot [here](https://github.com/TravisPooley/Twitter-Giveaway-Bot/wiki)
 
 ### Credit
 This project was inspired by the DEFCON 24 presentation "RT2WIN" by Hunter Scott which can be found [here](https://www.youtube.com/watch?v=iAOOdYsK7MM)
